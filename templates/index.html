@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>EDITH-X Personal AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="hud-bg"></div>
+
+    <div class="main-container">
+        <div class="left-panel glass">
+            <h1>EDITH</h1>
+
+            <div class="reactor-wrap">
+                <div class="arc-reactor"></div>
+            </div>
+
+            <p class="sub">Enhanced Digital Intelligence for Tactical Human Assistance</p>
+
+            <div class="status-box">
+                <div class="status-item">
+                    <span>Status</span>
+                    <strong>ONLINE</strong>
+                </div>
+                <div class="status-item">
+                    <span>Mode</span>
+                    <strong>PUBLIC DEPLOY</strong>
+                </div>
+                <div class="status-item">
+                    <span>Voice</span>
+                    <strong>ACTIVE</strong>
+                </div>
+            </div>
+
+            <select id="languageSelect" class="action-btn select-box">
+                <option value="en-US">English</option>
+                <option value="ta-IN">Tamil</option>
+            </select>
+
+            <button id="voiceBtn" class="voice-btn">🎤 Start Voice</button>
+            <button id="speakToggleBtn" class="action-btn">🔊 Toggle Voice Reply</button>
+            <button id="clearChatBtn" class="action-btn danger">🧹 Clear Chat Screen</button>
+
+            <div class="quick-box">
+                <h3>Quick Commands</h3>
+                <ul>
+                    <li>My name is Kathirvel</li>
+                    <li>What is my name</li>
+                    <li>What is the time</li>
+                    <li>Save note buy laptop</li>
+                    <li>Show my notes</li>
+                    <li>Open YouTube</li>
+                    <li>Open Google</li>
+                    <li>Help</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="right-panel glass">
+            <div class="chat-header">
+                <h2>AI Communication Console</h2>
+                <span class="live-dot"></span>
+            </div>
+
+            <div id="chatBox" class="chat-box">
+                <div class="message ai">EDITH initialized. Awaiting your command.</div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Type your command..." />
+                <button id="sendBtn">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
