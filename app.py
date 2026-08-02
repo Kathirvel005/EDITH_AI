@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, jsonify
 import json
 import os
 from datetime import datetime
+from google import genai
 
-from database import init_db, save_note_db, get_notes_db, clear_notes_db
+from database import init_db, save_note_db, get_notes_db, clear_notes_db, get_all_notes, delete_note_db
 
 app = Flask(__name__)
 
@@ -163,6 +164,43 @@ def fallback_ai_reply(user_message, memory):
     )
 
 
+def gemini_reply(user_message, api_key, chat_history):
+    try:
+        client = genai.Client(api_key=api_key)
+        
+        # System instructions incorporated in the prompt
+        context_prompt = (
+            "System Instruction: You are E.D.I.T.H. (Enhanced Digital Intelligence for Tactical Human Assistance), "
+            "a highly advanced, futuristic, and helpful personal AI assistant originally developed by Tony Stark. "
+            "Keep your answers relatively brief, intelligent, and incorporate occasional high-tech console flavor "
+            "(e.g., referencing system status, network connectivity, protocols, or files). "
+            "Address the user with respect, and assist them with calculations, general knowledge, or tasks.\n\n"
+            "Here is the recent conversation history:\n"
+        )
+        
+        # Filter and retrieve last 8 messages
+        history_slice = [msg for msg in chat_history if msg.get("role") in ["user", "assistant"]]
+        if len(history_slice) > 8:
+            history_slice = history_slice[-9:-1]
+        else:
+            history_slice = history_slice[:-1]
+            
+        for msg in history_slice:
+            role_name = "User" if msg["role"] == "user" else "E.D.I.T.H."
+            context_prompt += f"{role_name}: {msg['message']}\n"
+            
+        context_prompt += f"\nUser: {user_message}\nE.D.I.T.H.:"
+        
+        # Call modern gemini-2.0-flash model
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=context_prompt
+        )
+        return response.text
+    except Exception as e:
+        return f"[SYSTEM ERROR] Unable to query Gemini API: {str(e)}"
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -170,7 +208,7 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    data = request.get_json()
+    data = request.get_json() or {}
     user_message = data.get("message", "").strip()
 
     if not user_message:
@@ -184,7 +222,12 @@ def chat():
         "timestamp": str(datetime.now())
     })
 
-    reply = fallback_ai_reply(user_message, memory)
+    # Retrieve Gemini key from header or json payload
+    gemini_key = request.headers.get("X-Gemini-Key") or data.get("gemini_key")
+    if gemini_key:
+        reply = gemini_reply(user_message, gemini_key, memory.get("chat_history", []))
+    else:
+        reply = fallback_ai_reply(user_message, memory)
 
     memory["chat_history"].append({
         "role": "assistant",
@@ -197,6 +240,34 @@ def chat():
     return jsonify({"reply": reply})
 
 
+@app.route("/api/notes", methods=["GET"])
+def get_notes():
+    return jsonify({"notes": get_all_notes()})
+
+
+@app.route("/api/notes", methods=["POST"])
+def add_note():
+    data = request.get_json() or {}
+    content = data.get("content", "").strip()
+    if not content:
+        return jsonify({"error": "Content cannot be empty"}), 400
+    save_note_db(content)
+    memory = load_memory()
+    memory["notes"].append(content)
+    save_memory(memory)
+    return jsonify({"success": True, "notes": get_all_notes()})
+
+
+@app.route("/api/notes/<int:note_id>", methods=["DELETE"])
+def delete_note(note_id):
+    delete_note_db(note_id)
+    memory = load_memory()
+    db_notes = get_notes_db()
+    memory["notes"] = db_notes
+    save_memory(memory)
+    return jsonify({"success": True, "notes": get_all_notes()})
+
+
 if __name__ == "__main__":
     init_db()
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))

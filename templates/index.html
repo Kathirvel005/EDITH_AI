@@ -1,77 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>EDITH-X Personal AI Assistant</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E.D.I.T.H. Advanced Tactical Console</title>
+    <!-- Sci-fi Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <div class="hud-bg"></div>
+<body data-theme="edith">
+    <!-- Holographic grid scanning background overlay -->
+    <div class="hud-grid-overlay"></div>
+    <div class="hud-scanline"></div>
 
-    <div class="main-container">
-        <div class="left-panel glass">
-            <h1>EDITH</h1>
-
-            <div class="reactor-wrap">
-                <div class="arc-reactor"></div>
+    <div class="hud-main-shell">
+        <!-- Top Status Bar -->
+        <header class="hud-top-bar">
+            <div class="hud-system-title">
+                <span class="hud-glitch-text" data-text="EDITH">EDITH AI</span>
+                <span class="hud-ver">v3.5 // ADVANCED TACTICAL COMMAND CONSOLE</span>
             </div>
+            <div class="hud-core-clock">
+                <span class="label">SYS TIME:</span>
+                <span id="sysTime">00:00:00 AM</span>
+            </div>
+        </header>
 
-            <p class="sub">Enhanced Digital Intelligence for Tactical Human Assistance</p>
-
-            <div class="status-box">
-                <div class="status-item">
-                    <span>Status</span>
-                    <strong>ONLINE</strong>
+        <!-- Main Dashboard Layout -->
+        <div class="hud-container">
+            <!-- Left Column: Core Controls & Authentication -->
+            <section class="hud-panel left-panel glass">
+                <div class="hud-panel-header">
+                    <h3>SYSTEM INTERFACE</h3>
+                    <span class="hud-line"></span>
                 </div>
-                <div class="status-item">
-                    <span>Mode</span>
-                    <strong>PUBLIC DEPLOY</strong>
+                
+                <div class="reactor-container">
+                    <div class="reactor-outer-ring">
+                        <div class="reactor-inner-core" id="arcReactor">
+                            <div class="reactor-light"></div>
+                        </div>
+                    </div>
+                    <div class="reactor-status">
+                        <span class="label">CORE SYNCHRONIZER:</span>
+                        <strong id="reactorStatusText">STABLE (100%)</strong>
+                    </div>
                 </div>
-                <div class="status-item">
-                    <span>Voice</span>
-                    <strong>ACTIVE</strong>
+
+                <!-- Theme / Accent Configuration -->
+                <div class="hud-control-group">
+                    <label class="group-title">HUD GLOW COLOR SYSTEM</label>
+                    <div class="theme-buttons">
+                        <button class="theme-btn active" data-set-theme="edith" title="Cyan / EDITH">E</button>
+                        <button class="theme-btn" data-set-theme="jarvis" title="Gold / JARVIS">J</button>
+                        <button class="theme-btn" data-set-theme="friday" title="Red / FRIDAY">F</button>
+                        <button class="theme-btn" data-set-theme="veronica" title="Purple / VERONICA">V</button>
+                    </div>
                 </div>
-            </div>
 
-            <select id="languageSelect" class="action-btn select-box">
-                <option value="en-US">English</option>
-                <option value="ta-IN">Tamil</option>
-            </select>
+                <!-- Audio Sound Settings -->
+                <div class="hud-control-group">
+                    <label class="group-title">AUDIO AUDIO PROTOCOLS</label>
+                    <div class="audio-toggles">
+                        <button id="sfxToggleBtn" class="hud-btn-toggle active">🔊 Synthesizer SFX</button>
+                        <button id="ttsToggleBtn" class="hud-btn-toggle active">🎙️ Vocalizer TTS</button>
+                    </div>
+                    <div class="language-selection">
+                        <label for="languageSelect">Voice Vocalizer Accent:</label>
+                        <select id="languageSelect" class="hud-select">
+                            <option value="en-US">English (United States)</option>
+                            <option value="en-GB">English (United Kingdom)</option>
+                            <option value="ta-IN">Tamil (India)</option>
+                        </select>
+                    </div>
+                </div>
 
-            <button id="voiceBtn" class="voice-btn">🎤 Start Voice</button>
-            <button id="speakToggleBtn" class="action-btn">🔊 Toggle Voice Reply</button>
-            <button id="clearChatBtn" class="action-btn danger">🧹 Clear Chat Screen</button>
+                <!-- Gemini API Credentials -->
+                <div class="hud-control-group">
+                    <label class="group-title" for="apiInput">SECURE NEURAL API LINK (GEMINI)</label>
+                    <div class="api-key-wrapper">
+                        <input type="password" id="apiInput" placeholder="Enter Gemini API Key..." class="hud-input" autocomplete="off" />
+                        <button id="saveApiKeyBtn" class="hud-btn tiny">LINK</button>
+                        <button id="clearApiKeyBtn" class="hud-btn danger tiny" title="Clear Key">X</button>
+                    </div>
+                    <span class="hud-hint">Stored locally on your browser only. Enlists real LLM brains.</span>
+                </div>
+            </section>
 
-            <div class="quick-box">
-                <h3>Quick Commands</h3>
-                <ul>
-                    <li>My name is Kathirvel</li>
-                    <li>What is my name</li>
-                    <li>What is the time</li>
-                    <li>Save note buy laptop</li>
-                    <li>Show my notes</li>
-                    <li>Open YouTube</li>
-                    <li>Open Google</li>
-                    <li>Help</li>
-                </ul>
-            </div>
-        </div>
+            <!-- Center Column: Main Console Chat Output -->
+            <section class="hud-panel center-panel glass">
+                <div class="hud-panel-header">
+                    <h3>COMMUNICATION CONSOLE</h3>
+                    <div class="live-pulse">
+                        <span class="live-text">ONLINE STREAMING</span>
+                        <span class="live-dot"></span>
+                    </div>
+                </div>
 
-        <div class="right-panel glass">
-            <div class="chat-header">
-                <h2>AI Communication Console</h2>
-                <span class="live-dot"></span>
-            </div>
+                <div class="terminal-body" id="chatBox">
+                    <div class="terminal-msg bot">
+                        <span class="timestamp">[00:00:00]</span> <strong class="sender">EDITH:</strong> Systems online. Initiating AI terminal... Use API Key to unlock unlimited cognitive response, or run local keywords.
+                    </div>
+                </div>
 
-            <div id="chatBox" class="chat-box">
-                <div class="message ai">EDITH initialized. Awaiting your command.</div>
-            </div>
+                <!-- Waveform Canvas Visualizer -->
+                <div class="hud-waveform-area">
+                    <canvas id="waveformCanvas" height="60"></canvas>
+                </div>
 
-            <div class="input-area">
-                <input type="text" id="userInput" placeholder="Type your command..." />
-                <button id="sendBtn">Send</button>
-            </div>
+                <div class="hud-input-bar">
+                    <button id="voiceBtn" class="hud-voice-btn" title="Initiate Voice Control">
+                        <span class="icon">🎤</span>
+                    </button>
+                    <input type="text" id="userInput" placeholder="Awaiting keyboard instruction..." autofocus />
+                    <button id="sendBtn" class="hud-send-btn">
+                        <span class="text">SEND</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Column: Diagnostics & Notes Database -->
+            <section class="hud-panel right-panel glass">
+                <div class="hud-panel-header">
+                    <h3>DIAGNOSTIC TELEMETRY</h3>
+                    <span class="hud-line"></span>
+                </div>
+
+                <!-- Diagnostics Grid -->
+                <div class="diag-grid">
+                    <div class="diag-box">
+                        <span class="label">CPU CORE LOAD</span>
+                        <div class="diag-progress"><div class="bar" id="cpuBar" style="width: 38%;"></div></div>
+                        <span class="value" id="cpuText">38.2%</span>
+                    </div>
+                    <div class="diag-box">
+                        <span class="label">NEURAL SYNC</span>
+                        <div class="diag-progress"><div class="bar" id="syncBar" style="width: 94%;"></div></div>
+                        <span class="value" id="syncText">94.8%</span>
+                    </div>
+                    <div class="diag-box">
+                        <span class="label">SYS LATENCY</span>
+                        <span class="value number" id="latencyText">42 ms</span>
+                    </div>
+                    <div class="diag-box">
+                        <span class="label">THERMAL CORE</span>
+                        <span class="value number" id="tempText">36.5°C</span>
+                    </div>
+                </div>
+
+                <!-- Notes Manager Header -->
+                <div class="hud-panel-header sub-header">
+                    <h3>DATA RETRIEVAL VAULT</h3>
+                    <span class="hud-line"></span>
+                </div>
+
+                <!-- Interactive Notes CRUD UI -->
+                <div class="vault-container">
+                    <div class="vault-input-area">
+                        <input type="text" id="quickNoteInput" placeholder="Store quick note to SQLite..." class="hud-input" />
+                        <button id="addNoteBtn" class="hud-btn">STORE</button>
+                    </div>
+                    
+                    <div class="vault-list" id="notesList">
+                        <div class="vault-empty">No secure items archived.</div>
+                    </div>
+                </div>
+
+                <div class="hud-control-group notes-clear-group">
+                    <button id="clearChatBtn" class="hud-btn danger-outline">🧹 Clear Chat Screen</button>
+                </div>
+            </section>
         </div>
     </div>
 

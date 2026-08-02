@@ -35,6 +35,23 @@ def get_notes_db():
     return [row[0] for row in rows]
 
 
+def get_all_notes():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, content FROM notes ORDER BY id DESC")
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"id": row[0], "content": row[1]} for row in rows]
+
+
+def delete_note_db(note_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+    conn.commit()
+    conn.close()
+
+
 def clear_notes_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
